@@ -23,13 +23,19 @@ input input_regs[1000];
 word holding_regs[1000];
 
 // Prototypes
-coil read_coil_status();
+coil read_coil_status(int addr);
 void write_coil();
 word read_holding_register();
 void write_holding_register();
 
+void randomize_coils(coil coil_regs[]);
+
 uint32_t create_socket();
 uint32_t bind_socket(uint32_t server_sock);
+
+char function_code[8][2] = {
+    "1", "2", "3", "4", "5", "6", "15", "16"
+};
 
 int main() {
 
@@ -52,11 +58,11 @@ int main() {
     listen(server_sock, 1);
 
     while(1){
-        int new_sock, action, iResult;
+        int new_sock, action, iResult, client_action, modbus_addr;
         struct sockaddr_in client;
         memset(&client, '\0', sizeof(client));
         int clientLen = sizeof(client);
-        char sendbuf[] = "\t1. Read Coil Status\n\t2. Read Input Status\n\t3. Read Holding Register\n\t4. Read Internal Register\n\t5. Force Single Coil\n\t6. Write Single Register\n\t15. Force Multiple Coils\n\t16. Mask Write Register\n"; 
+        char sendbuf[16], recvbuf[16]; 
         
         if((new_sock = accept(server_sock, (struct sockaddr *)&client, (socklen_t*)&clientLen)) < 0){
             printf("client could not connect\n");
@@ -64,14 +70,26 @@ int main() {
         }
         printf("[+]Connection made with %s\n", inet_ntoa(client.sin_addr));
 
-        iResult = send(new_sock, sendbuf, (int) strlen(sendbuf), 0);
-        printf("Pick Address\n");
-        printf("\t1. Read Coil Status\n\t2. Read Input Status\n\t3. Read Holding Register\n\t4. Read Internal Register\n\t5. Force Single Coil\n\t6. Write Single Register\n\t15. Force Multiple Coils\n\t16. Mask Write Register\n");
-        scanf("%d", &action);
+        randomize_coils(coil_regs);
+        client_action = recv(new_sock, recvbuf, 16, 0);
+        printf("Recv buffer %s\n", recvbuf);
+        action = atoi(recvbuf);
+        printf("Action: %d\n", action);
+
+        memset(recvbuf, 0, 16);
+        client_action = recv(new_sock, recvbuf, 16, 0);
+        modbus_addr = atoi(recvbuf);
+        printf("Modbus addr %d\n", modbus_addr);        
+        memset(recvbuf, 0, 16);
+
+        // iResult = send(new_sock, sendbuf, (int) strlen(sendbuf), 0);
+        // printf("Pick Address\n");
+        // printf("\t1. Read Coil Status\n\t2. Read Input Status\n\t3. Read Holding Register\n\t4. Read Internal Register\n\t5. Force Single Coil\n\t6. Write Single Register\n\t15. Force Multiple Coils\n\t16. Mask Write Register\n");
+        // scanf("%d", &action);
         switch(action){
             case 1:
                 printf("Read Coil Status\n");
-                coil_res = read_coil_status();
+                coil_res = read_coil_status(modbus_addr);
                 printf("Read Coil Result: %hd\n", coil_res);
                 break;
             case 2: 
@@ -105,11 +123,8 @@ int main() {
     }
 }
 
-coil read_coil_status() {
-    uint32_t reg;
-    printf("Enter address of coil to be read (1 - 1000)\n\n");
-    scanf("%d", &reg);
-    return coil_regs[reg];
+coil read_coil_status(int addr) {
+    return coil_regs[addr];
 }
 
 void write_coil() {
@@ -191,9 +206,20 @@ uint32_t bind_socket(uint32_t server_sock){
     uint32_t temp = -1;
     struct sockaddr_in remote;
     memset(&remote, '\0', sizeof(remote)); 
-    remote.sin_addr.s_addr = inet_addr("");
+    remote.sin_addr.s_addr = inet_addr("192.168.0.139");
     remote.sin_family = AF_INET;
     remote.sin_port = htons(PORT);
     temp = bind(server_sock, (struct sockaddr *)&remote, sizeof(remote));
     return temp;
+}
+
+void randomize_coils(coil coil_regs[]) {
+    printf("Randomizing coils...\n");
+    for(size_t i = 0; i <= 1000; i++){
+        if(i % 2 == 0) {
+            coil_regs[i] = 0;
+        } else {
+            coil_regs[i] = 1;
+        }
+    }
 }
