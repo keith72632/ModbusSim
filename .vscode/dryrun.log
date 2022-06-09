@@ -1,0 +1,5 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/khorton/Documents/ModbusSim'
+gcc modbus_sim.c server.c -o modbus_sim
+make: Leaving directory '/home/khorton/Documents/ModbusSim'
+ 

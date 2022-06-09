@@ -16,12 +16,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as s:
     15. Force Multiple Coils
     16 Masked Write Register
     """)
-    send_res = bytes(action, 'utf-8')
+    action_bytes = bytes(action, 'utf-8')
 
-    s.send(send_res)
+    s.send(action_bytes)
 
     modbus_addr = input("Enter address\n")
 
-    send_addr = bytes(modbus_addr, 'utf-8')
+    modbus_addr_bytes = bytes(modbus_addr, 'utf-8')
 
-    s.send(send_addr)
+    s.send(modbus_addr_bytes)
+
+    if action == "5" or "6" or "15" or "16":
+        val = input("Input value to be written\n")
+        val_byte = bytes(val, 'utf-8')

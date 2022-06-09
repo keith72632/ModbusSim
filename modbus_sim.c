@@ -9,29 +9,14 @@
 #include <sys/types.h>
 #include <time.h>
 
-
-#define WORD_SIZE    16
-#define MAX_LINE     2048
-#define PORT         5502
-
-typedef uint8_t coil, discrete_input;
-typedef uint16_t input, word;
+#include "server.h"
+#include "registers.h"
 
 coil coil_regs[1000], coil_res;
 discrete_input discrete_input_regs[1000];
 input input_regs[1000];
 word holding_regs[1000];
 
-// Prototypes
-coil read_coil_status(int addr);
-void write_coil();
-word read_holding_register();
-void write_holding_register();
-
-void randomize_coils(coil coil_regs[]);
-
-uint32_t create_socket();
-uint32_t bind_socket(uint32_t server_sock);
 
 char function_code[8][2] = {
     "1", "2", "3", "4", "5", "6", "15", "16"
@@ -58,7 +43,7 @@ int main() {
     listen(server_sock, 1);
 
     while(1){
-        int new_sock, action, iResult, client_action, modbus_addr;
+        int new_sock, action, iResult, client_action, modbus_addr, modbus_val;
         struct sockaddr_in client;
         memset(&client, '\0', sizeof(client));
         int clientLen = sizeof(client);
@@ -89,26 +74,26 @@ int main() {
         switch(action){
             case 1:
                 printf("Read Coil Status\n");
-                coil_res = read_coil_status(modbus_addr);
+                coil_res = read_coil_status(modbus_addr, coil_regs);
                 printf("Read Coil Result: %hd\n", coil_res);
                 break;
             case 2: 
-                printf("Read Input Status\n");
+		printf("Read input status\n");
                 break;
             case 3:
                 printf("Read Holding Register\n");
-                word res = read_holding_register();
+                word res = read_holding_register(modbus_addr, holding_regs);
                 break;
             case 4:
                 printf("Read Internal Register\n");
                 break;
             case 5:
-                printf("Force Single Coil\n");
-                write_coil();
+                write_coil(modbus_addr, coil_regs);
+                printf("Coil address %d written to\n", modbus_addr);
                 break;
             case 6:
                 printf("Write Single Register\n");
-                write_holding_register();
+                write_holding_register(modbus_addr, holding_regs);
                 break;
             case 15:
                 printf("Force Multiple Coils");
@@ -123,103 +108,3 @@ int main() {
     }
 }
 
-coil read_coil_status(int addr) {
-    return coil_regs[addr];
-}
-
-void write_coil() {
-    uint32_t reg;
-    printf("Enter address of coil to be written to (1 - 1000)\n");
-    scanf("%d", &reg);
-    coil_regs[reg] |= 0x01;
-    printf("Coil register %d set to %hhd\n\n", reg, coil_regs[reg]);
-}
-
-word read_holding_register() {
-    uint32_t reg;
-    FILE *fp = NULL;
-    char status;
-    char output[MAX_LINE];
-    bool keep_reading = true;
-    int current_line = 1;
-
-    fp = fopen("./holding_registers.txt", "r");
-
-    if(fp == NULL) {
-        perror("Cannot access holding registers\n");
-    }
-
-    printf("Enter address of holding register to be read (1 - 1000)\nAddress>");
-    scanf("%d", &reg);
-
-    do {
-        fgets(output, MAX_LINE, fp);
-
-        if(feof(fp))
-        {
-            keep_reading = false;
-            printf("File %d lines.\n", (current_line - 1));
-        } else if (current_line == reg){
-            keep_reading = false;
-            printf("Address %d value: %s", reg, output);
-        }
-
-        current_line++;
-    } while(keep_reading);
-
-    fclose(fp);
-
-    return holding_regs[reg];
-}
-
-void write_holding_register() {
-    FILE *fp = NULL;
-    uint32_t reg;
-    word val;
-    printf("Enter address of holding register to be written to (1 - 1000)\n");
-    scanf("%d", &reg);
-    printf("Enter value to be written to address\n");
-    scanf("%hd", &val);
-    holding_regs[reg] = val;
-    printf("Holding register %d set to %hd\n\n", reg, val);
-
-    fp = fopen("./holding_registers.txt", "w+");
-
-    if(fp == NULL) {
-        perror("Cannot access holding registers\n");
-    }
-
-
-    fclose(fp);
-
-}
-
-
-uint32_t create_socket(){
-    uint32_t temp = -1;
-    temp = socket(AF_INET, SOCK_STREAM, 0);
-    printf("[+]Socket created...\n");
-    return temp;
-}
-
-uint32_t bind_socket(uint32_t server_sock){
-    uint32_t temp = -1;
-    struct sockaddr_in remote;
-    memset(&remote, '\0', sizeof(remote)); 
-    remote.sin_addr.s_addr = inet_addr("192.168.0.139");
-    remote.sin_family = AF_INET;
-    remote.sin_port = htons(PORT);
-    temp = bind(server_sock, (struct sockaddr *)&remote, sizeof(remote));
-    return temp;
-}
-
-void randomize_coils(coil coil_regs[]) {
-    printf("Randomizing coils...\n");
-    for(size_t i = 0; i <= 1000; i++){
-        if(i % 2 == 0) {
-            coil_regs[i] = 0;
-        } else {
-            coil_regs[i] = 1;
-        }
-    }
-}

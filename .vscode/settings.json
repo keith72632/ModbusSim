@@ -1,0 +1,8 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "files.associations": {
+        "types.h": "c",
+        "server.h": "c",
+        "stdbool.h": "c"
+    }
+}
