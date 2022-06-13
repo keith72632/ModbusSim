@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jun  9 18:28:32 2022
+# Make data base, printed on Mon Jun 13 17:55:09 2022
 
 # Variables
 
@@ -21,7 +21,7 @@ SSH_AGENT_LAUNCHER = gnome-keyring
 # environment
 SNAP_INSTANCE_KEY = 
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-4417d59c-62b7-4465-ab39-b0eea7cd9504.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-9c5b1255-2c39-4a4e-b7c9-56fff2fddb2a.sock
 # environment
 VSCODE_CWD = /home/khorton/Documents/ModbusSim
 # default
@@ -57,7 +57,7 @@ VSCODE_CODE_CACHE_PATH = /home/khorton/.config/Code/CachedData/4af164ea3a06f701f
 # environment
 LANG = C
 # environment
-XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.H01JN1
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.CLRSN1
 # default
 .LOADED := 
 # default
@@ -101,13 +101,13 @@ SNAP_REEXEC =
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 6614
+VSCODE_PID = 2564
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/khorton-VirtualBox:@/tmp/.ICE-unix/1728,unix/khorton-VirtualBox:/tmp/.ICE-unix/1728
+SESSION_MANAGER = local/khorton-VirtualBox:@/tmp/.ICE-unix/1718,unix/khorton-VirtualBox:/tmp/.ICE-unix/1718
 # automatic
 *F = $(notdir $*)
 # environment
@@ -131,7 +131,7 @@ XMODIFIERS = @im=ibus
 # environment
 SHLVL = 1
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/88e2e9c4_3a07_4012_b5ce_3a61b09c193c
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/069f15b3_b984_429d_9825_a9305b71ef3d
 # environment
 MAKELEVEL := 0
 # default
@@ -181,7 +181,7 @@ SNAP_ARCH = amd64
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 1914
+SYSTEMD_EXEC_PID = 1908
 # environment
 DISPLAY = :0
 # environment
@@ -257,9 +257,9 @@ SNAP_LIBRARY_PATH = /var/lib/snapd/lib/gl:/var/lib/snapd/lib/gl32:/var/lib/snapd
 
 # Directories
 
-# . (device 2051, inode 2491689): 11 files, no impossibilities.
+# . (device 2051, inode 2491689): 14 files, no impossibilities.
 
-# 11 files, no impossibilities in 1 directories.
+# 14 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -277,7 +277,6 @@ Makefile:
 clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
- 
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 10):
 	rm a.out modbus_sim
@@ -285,6 +284,7 @@ clean:
 # Not a target:
 server.c:
 #  Implicit rule search has been done.
+ 
 #  Last modified 2022-06-09 18:24:16.981901352
 #  File has been updated.
 #  Successfully updated.
@@ -295,7 +295,7 @@ server.c:
 #  Modification time never checked.
 #  File has not been updated.
 
-all: modbus_sim.c server.c
+all: modbus_sim.c registers.c server.c
 #  Command line target.
 #  Implicit rule search has not been done.
 #  Implicit/static pattern stem: ''
@@ -309,13 +309,13 @@ all: modbus_sim.c server.c
 # automatic
 # < := modbus_sim.c
 # automatic
-# + := modbus_sim.c server.c
+# + := modbus_sim.c registers.c server.c
 # automatic
 # % := 
 # automatic
-# ^ := modbus_sim.c server.c
+# ^ := modbus_sim.c registers.c server.c
 # automatic
-# ? := modbus_sim.c server.c
+# ? := modbus_sim.c registers.c server.c
 # automatic
 # | := 
 # variable set hash-table stats:
@@ -334,7 +334,14 @@ run:
 # Not a target:
 modbus_sim.c:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-09 18:23:02.231407247
+#  Last modified 2022-06-09 18:40:33.694976255
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+registers.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-09 18:35:52.839521723
 #  File has been updated.
 #  Successfully updated.
 
@@ -345,19 +352,19 @@ modbus_sim.c:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=8/1024=1%, Rehash=0, Collisions=0/22=0%
+# Load=9/1024=1%, Rehash=0, Collisions=0/24=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 18 / storage = 168 B / avg = 9 B
-# current buf: size = 8162 B / used = 168 B / count = 18 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 21 / storage = 203 B / avg = 9 B
+# current buf: size = 8162 B / used = 203 B / count = 21 / avg = 9 B
 
-# strcache performance: lookups = 29 / hit rate = 37%
+# strcache performance: lookups = 33 / hit rate = 36%
 # hash-table stats:
-# Load=18/8192=0%, Rehash=0, Collisions=0/29=0%
-# Finished Make data base on Thu Jun  9 18:28:32 2022
+# Load=21/8192=0%, Rehash=0, Collisions=0/33=0%
+# Finished Make data base on Mon Jun 13 17:55:09 2022
 
  

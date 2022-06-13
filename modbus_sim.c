@@ -43,7 +43,7 @@ int main() {
     listen(server_sock, 1);
 
     while(1){
-        int new_sock, action, iResult, client_action, modbus_addr, modbus_val;
+        int new_sock, action, iResult, client_action, modbus_addr, modbus_val, converted;
         struct sockaddr_in client;
         memset(&client, '\0', sizeof(client));
         int clientLen = sizeof(client);
@@ -75,14 +75,22 @@ int main() {
             case 1:
                 printf("Read Coil Status\n");
                 coil_res = read_coil_status(modbus_addr, coil_regs);
+                converted = htonl(coil_res);
+                uint32_t x = 6969;
+                client_action = send(new_sock, &coil_res, sizeof(coil_res), 0);
                 printf("Read Coil Result: %hd\n", coil_res);
                 break;
             case 2: 
-		printf("Read input status\n");
+	        	printf("Read input status\n");
                 break;
             case 3:
                 printf("Read Holding Register\n");
                 word res = read_holding_register(modbus_addr, holding_regs);
+                uint32_t n = 6969;
+                converted = htonl(n);
+                printf("Value from holding register %hd\n", res);
+                client_action = send(new_sock, &converted, 16, 0);
+                printf("Data send\n");
                 break;
             case 4:
                 printf("Read Internal Register\n");
