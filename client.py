@@ -29,3 +29,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as s:
     if action == "5" or "6" or "15" or "16":
         val = input("Input value to be written\n")
         val_byte = bytes(val, 'utf-8')
+
+    recv_buf = s.recv(16)
+    recv_decoded = int.from_bytes(recv_buf, "little")
+    print(f'Data recived {recv_buf}')
+    print(recv_decoded)
